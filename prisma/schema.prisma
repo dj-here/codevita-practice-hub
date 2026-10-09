@@ -1,0 +1,305 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         String   @default("CUSTOMER") // "CUSTOMER", "PANDIT", "ADMIN", "SUPPORT"
+  avatarUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customerProfile  CustomerProfile?
+  panditProfile    PanditProfile?
+  customerBookings Booking[]         @relation("CustomerBookings")
+  reviewsGiven     Review[]
+  notifications    Notification[]
+  supportTickets   SupportTicket[]
+  auditLogs        AuditLog[]
+}
+
+model CustomerProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  address            String?
+  city               String   @default("Hyderabad")
+  locality           String?
+  pincode            String?
+  preferredLanguages String   @default("Telugu, English")
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model PanditProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio                String?
+  experienceYears    Int      @default(5)
+  traditions         String   @default("Vedic, Smartha")
+  languages          String   @default("Telugu, Hindi, Sanskrit")
+  city               String   @default("Hyderabad")
+  serviceLocalities  String   @default("Madhapur, Gachibowli, Kukatpally, Banjara Hills, Jubilee Hills, Secunderabad, Miyapur, Kondapur")
+  samagriProvided    Boolean  @default(true)
+  verificationStatus String   @default("PENDING_REVIEW") // "NOT_SUBMITTED", "PENDING_REVIEW", "MORE_INFO_REQUIRED", "APPROVED", "REJECTED", "SUSPENDED"
+  rejectionReason    String?
+  rating             Float    @default(5.0)
+  reviewCount        Int      @default(0)
+  isAvailable        Boolean  @default(true)
+  travelRadiusKm     Int      @default(25)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  documents      VerificationDocument[]
+  bookings       Booking[]              @relation("PanditBookings")
+  earnings       PartnerEarnings[]
+  reviews        Review[]
+  availabilities PanditAvailability[]
+}
+
+model VerificationDocument {
+  id              String         @id @default(cuid())
+  panditProfileId String
+  pandit          PanditProfile  @relation(fields: [panditProfileId], references: [id], onDelete: Cascade)
+  documentType    String         // "AADHAAR", "PAN", "PRIESTHOOD_CERTIFICATE", "REFERENCE_LETTER"
+  documentNumber  String?
+  fileUrl         String
+  status          String         @default("PENDING") // "PENDING", "VERIFIED", "REJECTED"
+  adminNotes      String?
+  submittedAt     DateTime       @default(now())
+  reviewedAt      DateTime?
+}
+
+model RitualCategory {
+  id           String   @id @default(cuid())
+  name         String
+  slug         String   @unique
+  description  String
+  icon         String   @default("Flame")
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  rituals Ritual[]
+}
+
+model Ritual {
+  id                   String         @id @default(cuid())
+  categoryId           String
+  category             RitualCategory @relation(fields: [categoryId], references: [id])
+  name                 String
+  slug                 String         @unique
+  description          String
+  shortDescription     String
+  durationHours        Float          @default(2.5)
+  languages            String         @default("Telugu, Hindi, Sanskrit")
+  traditions           String         @default("Vedic, Smartha")
+  samagriChecklist     String         // JSON string array
+  priestCountRequired  Int            @default(1)
+  basePrice            Int            @default(2500) // INR
+  isPublished          Boolean        @default(true)
+  imageUrl             String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  packages ServicePackage[]
+  bookings Booking[]
+}
+
+model ServicePackage {
+  id            String   @id @default(cuid())
+  ritualId      String
+  ritual        Ritual   @relation(fields: [ritualId], references: [id], onDelete: Cascade)
+  name          String
+  tier          String   @default("STANDARD") // "BASIC", "STANDARD", "PREMIUM"
+  description   String
+  inclusions    String   // JSON string array
+  exclusions    String   // JSON string array
+  panditFee     Int
+  samagriCost   Int      @default(0)
+  travelCost    Int      @default(0)
+  platformFee   Int      @default(200)
+  taxes         Int      @default(0)
+  totalAmount   Int
+  samagriOption String   @default("FULL_SAMAGRI_INCLUDED") // "CUSTOMER_ARRANGED", "PARTIAL_SAMAGRI", "FULL_SAMAGRI_INCLUDED"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  bookings Booking[]
+}
+
+model Booking {
+  id                         String   @id @default(cuid())
+  bookingNumber              String   @unique
+  customerId                 String
+  customer                   User     @relation("CustomerBookings", fields: [customerId], references: [id])
+  panditId                   String?
+  pandit                     PanditProfile? @relation("PanditBookings", fields: [panditId], references: [id])
+  ritualId                   String
+  ritual                     Ritual   @relation(fields: [ritualId], references: [id])
+  packageId                  String
+  package                    ServicePackage @relation(fields: [packageId], references: [id])
+  status                     String   @default("PENDING_CONFIRMATION") // "DRAFT", "PENDING_CONFIRMATION", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED", "REFUNDED"
+  bookingMode                String   @default("INSTANT") // "INSTANT", "REQUEST_BASED"
+  scheduledDate              String   // "YYYY-MM-DD"
+  startTime                  String   // "09:00"
+  endTime                    String   // "12:00"
+  ceremonyAddress            String
+  city                       String   @default("Hyderabad")
+  locality                   String
+  pincode                    String?
+  language                   String   @default("Telugu")
+  samagriOption              String   @default("FULL_SAMAGRI_INCLUDED")
+  specialInstructions        String?
+  priceSnapshot              String   // JSON string snapshot
+  totalAmount                Int      // INR
+  panditPayoutAmount         Int      // INR
+  platformCommissionAmount   Int      // INR
+  cancellationPolicySnapshot String
+  cancellationReason         String?
+  cancelledAt                DateTime?
+  completedAt                DateTime?
+  createdAt                  DateTime @default(now())
+  updatedAt                  DateTime @updatedAt
+
+  statusHistory BookingStatusHistory[]
+  payments      PaymentTransaction[]
+  earnings      PartnerEarnings?
+  review        Review?
+}
+
+model BookingStatusHistory {
+  id              String   @id @default(cuid())
+  bookingId       String
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fromStatus      String?
+  toStatus        String
+  reason          String?
+  changedByUserId String?
+  createdAt       DateTime @default(now())
+}
+
+model PaymentTransaction {
+  id                 String   @id @default(cuid())
+  bookingId          String
+  booking            Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  transactionNumber  String   @unique
+  amount             Int      // INR
+  currency           String   @default("INR")
+  provider           String   @default("SANDBOX_SIMULATOR") // "RAZORPAY", "SANDBOX_SIMULATOR"
+  providerOrderId    String?
+  providerPaymentId  String?
+  status             String   @default("INITIATED") // "INITIATED", "SUCCESS", "FAILED", "REFUNDED"
+  signatureVerified  Boolean  @default(false)
+  metadata           String?  // JSON string
+  createdAt          DateTime @default(now())
+
+  refunds RefundRecord[]
+}
+
+model RefundRecord {
+  id                   String             @id @default(cuid())
+  paymentTransactionId String
+  payment              PaymentTransaction @relation(fields: [paymentTransactionId], references: [id])
+  bookingId            String
+  amount               Int                // INR
+  reason               String
+  status               String             @default("PENDING") // "PENDING", "PROCESSED", "FAILED"
+  providerRefundId     String?
+  processedAt          DateTime?
+  createdAt            DateTime           @default(now())
+}
+
+model PartnerEarnings {
+  id                 String        @id @default(cuid())
+  panditId           String
+  pandit             PanditProfile @relation(fields: [panditId], references: [id])
+  bookingId          String        @unique
+  booking            Booking       @relation(fields: [bookingId], references: [id])
+  grossAmount        Int           // INR
+  commissionDeducted Int           // INR
+  netPayable         Int           // INR
+  payoutStatus       String        @default("PENDING") // "PENDING", "PROCESSING", "PAID"
+  payoutDate         DateTime?
+  payoutReference    String?
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+model Review {
+  id                         String        @id @default(cuid())
+  bookingId                  String        @unique
+  booking                    Booking       @relation(fields: [bookingId], references: [id])
+  customerId                 String
+  customer                   User          @relation(fields: [customerId], references: [id])
+  panditId                   String
+  pandit                     PanditProfile @relation(fields: [panditId], references: [id])
+  rating                     Int           @default(5) // 1-5
+  ritualQualityRating        Int           @default(5)
+  punctualityRating          Int           @default(5)
+  comment                    String
+  isVerifiedCompletedBooking Boolean       @default(true)
+  createdAt                  DateTime      @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // "BOOKING_UPDATE", "PAYMENT", "SYSTEM", "REMINDER"
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  metadata  String?
+  createdAt DateTime @default(now())
+}
+
+model SupportTicket {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingId    String?
+  ticketNumber String   @unique
+  subject      String
+  message      String
+  status       String   @default("OPEN") // "OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"
+  priority     String   @default("MEDIUM") // "LOW", "MEDIUM", "HIGH"
+  resolution   String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  action     String
+  entityType String
+  entityId   String?
+  details    String?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+model PanditAvailability {
+  id          String        @id @default(cuid())
+  panditId    String
+  pandit      PanditProfile @relation(fields: [panditId], references: [id], onDelete: Cascade)
+  date        String        // "YYYY-MM-DD"
+  isBlocked   Boolean       @default(false)
+  customSlots String?       // JSON string
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@unique([panditId, date])
+}

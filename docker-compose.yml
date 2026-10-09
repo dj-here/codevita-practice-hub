@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pujaconnect_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://pujaconnect:sacred_secure_pwd@postgres:5432/pujaconnect_db?schema=public
+      - JWT_SECRET=production-secret-key-64-character-random-string-here
+      - NEXT_PUBLIC_APP_URL=http://localhost:3000
+      - ENABLE_SANDBOX_PAYMENTS=true
+      - DEFAULT_CITY=Hyderabad
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: pujaconnect_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pujaconnect
+      POSTGRES_PASSWORD: sacred_secure_pwd
+      POSTGRES_DB: pujaconnect_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pujaconnect -d pujaconnect_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
