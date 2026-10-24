@@ -1,5 +1,5 @@
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -32,14 +32,14 @@ model Problem {
   id            String   @id @default(cuid())
   slug          String   @unique
   title         String
-  statement     String
-  inputFormat   String
-  outputFormat  String
-  constraints   String
+  statement     String   @db.Text
+  inputFormat   String   @db.Text
+  outputFormat  String   @db.Text
+  constraints   String   @db.Text
   difficulty    String   @default("MEDIUM") // EASY, MEDIUM, HARD
   timeLimitMs   Int      @default(1000)
   memoryLimitKb Int      @default(262144)
-  editorial     String?
+  editorial     String?  @db.Text
   isPublished   Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -60,10 +60,10 @@ model Problem {
 model TestCase {
   id             String   @id @default(cuid())
   problemId      String
-  input          String
-  expectedOutput String
+  input          String   @db.Text
+  expectedOutput String   @db.Text
   isSample       Boolean  @default(false)
-  explanation    String?
+  explanation    String?  @db.Text
   orderIndex     Int      @default(0)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -106,7 +106,7 @@ model CodeDraft {
   userId    String
   problemId String
   language  String   // C, CPP, JAVA, PYTHON
-  code      String
+  code      String   @db.Text
   updatedAt DateTime @updatedAt
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -122,12 +122,12 @@ model Submission {
   problemId        String
   contestAttemptId String?
   language         String   // C, CPP, JAVA, PYTHON
-  code             String
+  code             String   @db.Text
   verdict          String   @default("PENDING") // ACCEPTED, WRONG_ANSWER, TIME_LIMIT_EXCEEDED, MEMORY_LIMIT_EXCEEDED, RUNTIME_ERROR, COMPILATION_ERROR, PENDING, RUNNING
   executionTimeMs  Int?
   memoryKb         Int?
-  compileOutput    String?
-  errorOutput      String?
+  compileOutput    String?  @db.Text
+  errorOutput      String?  @db.Text
   totalCases       Int      @default(0)
   passedCases      Int      @default(0)
   createdAt        DateTime @default(now())
@@ -152,8 +152,8 @@ model SubmissionCaseResult {
   verdict         String
   executionTimeMs Int?
   memoryKb        Int?
-  stdout          String?
-  stderr          String?
+  stdout          String?  @db.Text
+  stderr          String?  @db.Text
   isSample        Boolean  @default(false)
   createdAt       DateTime @default(now())
 
@@ -186,7 +186,7 @@ model Contest {
   id              String   @id @default(cuid())
   slug            String   @unique
   title           String
-  description     String
+  description     String   @db.Text
   durationMinutes Int      @default(90)
   presetType      String   @default("STANDARD_90") // STANDARD_90, STANDARD_180, CUSTOM
   isPublished     Boolean  @default(true)
@@ -261,7 +261,7 @@ model InterviewMessage {
   id         String   @id @default(cuid())
   sessionId  String
   role       String   // SYSTEM, ASSISTANT, USER
-  content    String
+  content    String   @db.Text
   orderIndex Int      @default(0)
   createdAt  DateTime @default(now())
 
@@ -278,10 +278,10 @@ model InterviewScorecard {
   correctnessScore    Float
   problemSolvingScore Float
   confidenceScore     Float
-  strengths           String
-  gaps                String
-  sevenDayPlan        String
-  transcriptSummary   String
+  strengths           String   @db.Text
+  gaps                String   @db.Text
+  sevenDayPlan        String   @db.Text
+  transcriptSummary   String   @db.Text
   isStaticFallback    Boolean  @default(false)
   createdAt           DateTime @default(now())
 
