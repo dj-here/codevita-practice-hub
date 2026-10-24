@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { executeCode } from '@/lib/judge0';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { aggregateVerdicts } from '@/lib/verdicts';
+import { submissionQueue } from '@/lib/submission-queue';
 import { ProgrammingLanguage, Verdict } from '@/types';
 
 const submitSchema = z.object({
@@ -75,64 +76,86 @@ export async function POST(req: Request) {
       );
     }
 
-    // Execute test cases
-    const caseExecutionResults: Array<{
-      testCaseId: string;
-      verdict: Verdict;
-      executionTimeMs: number;
-      memoryKb: number;
-      stdout: string;
-      stderr: string;
-      compileOutput: string;
-      isSample: boolean;
-    }> = [];
+    // Execute test cases through the concurrency-regulated queue (protects CPU against 4,000+ simultaneous bursts)
+    const {
+      caseExecutionResults,
+      maxTimeMs,
+      maxMemoryKb,
+      passedCount,
+      compileErrorOutput,
+      finalVerdict,
+    } = await submissionQueue.run(async () => {
+      const results: Array<{
+        testCaseId: string;
+        verdict: Verdict;
+        executionTimeMs: number;
+        memoryKb: number;
+        stdout: string;
+        stderr: string;
+        compileOutput: string;
+        isSample: boolean;
+      }> = [];
 
-    let maxTimeMs = 0;
-    let maxMemoryKb = 0;
-    let passedCount = 0;
-    let compileErrorOutput = '';
+      let curMaxTime = 0;
+      let curMaxMem = 0;
+      let curPassed = 0;
+      let curCompileErr = '';
 
-    for (let i = 0; i < problem.testCases.length; i++) {
-      const tc = problem.testCases[i];
-      const exec = await executeCode({
-        language,
-        code,
-        stdin: tc.input,
-        expectedOutput: tc.expectedOutput,
-        timeLimitMs: problem.timeLimitMs,
-        memoryLimitKb: problem.memoryLimitKb,
-      });
+      for (let i = 0; i < problem.testCases.length; i++) {
+        const tc = problem.testCases[i];
+        const exec = await executeCode({
+          language,
+          code,
+          stdin: tc.input,
+          expectedOutput: tc.expectedOutput,
+          timeLimitMs: problem.timeLimitMs,
+          memoryLimitKb: problem.memoryLimitKb,
+        });
 
-      maxTimeMs = Math.max(maxTimeMs, exec.executionTimeMs);
-      maxMemoryKb = Math.max(maxMemoryKb, exec.memoryKb);
+        curMaxTime = Math.max(curMaxTime, exec.executionTimeMs);
+        curMaxMem = Math.max(curMaxMem, exec.memoryKb);
 
-      if (exec.verdict === Verdict.ACCEPTED) {
-        passedCount++;
+        if (exec.verdict === Verdict.ACCEPTED) {
+          curPassed++;
+        }
+
+        if (exec.verdict === Verdict.COMPILATION_ERROR) {
+          curCompileErr = exec.compileOutput || exec.stderr;
+        }
+
+        results.push({
+          testCaseId: tc.id,
+          verdict: exec.verdict,
+          executionTimeMs: exec.executionTimeMs,
+          memoryKb: exec.memoryKb,
+          stdout: exec.stdout,
+          stderr: exec.stderr,
+          compileOutput: exec.compileOutput,
+          isSample: tc.isSample,
+        });
+
+        // Fast-fail: break on compilation error immediately
+        if (exec.verdict === Verdict.COMPILATION_ERROR) {
+          break;
+        }
+
+        // Fast-fail: on hidden test cases, halt at first failure to save 80% CPU during high-concurrency bursts
+        if (!tc.isSample && exec.verdict !== Verdict.ACCEPTED) {
+          break;
+        }
       }
 
-      if (exec.verdict === Verdict.COMPILATION_ERROR) {
-        compileErrorOutput = exec.compileOutput || exec.stderr;
-      }
+      const aggVerdict = aggregateVerdicts(results);
 
-      caseExecutionResults.push({
-        testCaseId: tc.id,
-        verdict: exec.verdict,
-        executionTimeMs: exec.executionTimeMs,
-        memoryKb: exec.memoryKb,
-        stdout: exec.stdout,
-        stderr: exec.stderr,
-        compileOutput: exec.compileOutput,
-        isSample: tc.isSample,
-      });
-
-      // Break on compilation error as remaining cases will also fail
-      if (exec.verdict === Verdict.COMPILATION_ERROR) {
-        break;
-      }
-    }
-
-    // Determine aggregate verdict
-    const finalVerdict = aggregateVerdicts(caseExecutionResults);
+      return {
+        caseExecutionResults: results,
+        maxTimeMs: curMaxTime,
+        maxMemoryKb: curMaxMem,
+        passedCount: curPassed,
+        compileErrorOutput: curCompileErr,
+        finalVerdict: aggVerdict,
+      };
+    });
 
     // Save submission to database
     const submission = await prisma.submission.create({

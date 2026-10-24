@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { executeCode } from '@/lib/judge0';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { submissionQueue } from '@/lib/submission-queue';
 import { ProgrammingLanguage, Verdict } from '@/types';
 
 const runSchema = z.object({
@@ -102,35 +103,38 @@ export async function POST(req: Request) {
       );
     }
 
-    // Execute each testcase sequentially or concurrently (max 3 sample cases)
-    const results = [];
-    for (let i = 0; i < testCasesToRun.length; i++) {
-      const tc = testCasesToRun[i];
-      const exec = await executeCode({
-        language,
-        code,
-        stdin: tc.input,
-        expectedOutput: tc.expectedOutput,
-        timeLimitMs,
-        memoryLimitKb,
-      });
+    // Execute each testcase through the concurrency-regulated queue (protects CPU during 4,000+ user bursts)
+    const results = await submissionQueue.run(async () => {
+      const caseResults = [];
+      for (let i = 0; i < testCasesToRun.length; i++) {
+        const tc = testCasesToRun[i];
+        const exec = await executeCode({
+          language,
+          code,
+          stdin: tc.input,
+          expectedOutput: tc.expectedOutput,
+          timeLimitMs,
+          memoryLimitKb,
+        });
 
-      results.push({
-        caseIndex: i + 1,
-        input: tc.input,
-        expectedOutput: tc.expectedOutput || null,
-        stdout: exec.stdout,
-        stderr: exec.stderr,
-        compileOutput: exec.compileOutput,
-        executionTimeMs: exec.executionTimeMs,
-        verdict: exec.verdict,
-      });
+        caseResults.push({
+          caseIndex: i + 1,
+          input: tc.input,
+          expectedOutput: tc.expectedOutput || null,
+          stdout: exec.stdout,
+          stderr: exec.stderr,
+          compileOutput: exec.compileOutput,
+          executionTimeMs: exec.executionTimeMs,
+          verdict: exec.verdict,
+        });
 
-      // If compilation error occurs, break early since all cases will have the same error
-      if (exec.verdict === Verdict.COMPILATION_ERROR) {
-        break;
+        // If compilation error occurs, break early since all cases will have the same error
+        if (exec.verdict === Verdict.COMPILATION_ERROR) {
+          break;
+        }
       }
-    }
+      return caseResults;
+    });
 
     return NextResponse.json({
       success: true,
