@@ -1,48 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getSession } from '@/lib/auth';
-import prisma from '@/lib/prisma';
+import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const session = await getSession();
-    if (!session) {
-      return NextResponse.json({ user: null });
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
-      where: { id: session.userId },
+      where: { email: session.user.email },
       select: {
         id: true,
         name: true,
         email: true,
         role: true,
-        phone: true,
-        avatarUrl: true,
-        customerProfile: true,
-        panditProfile: {
-          include: {
-            documents: true,
-          },
-        },
+        image: true,
+        createdAt: true,
       },
     });
 
     if (!user) {
-      return NextResponse.json({ user: null });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({
-      user: {
-        userId: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        phone: user.phone,
-        avatarUrl: user.avatarUrl,
-      },
-      profile: user.role === 'PANDIT' ? user.panditProfile : user.customerProfile,
-    });
-  } catch (err: any) {
-    return NextResponse.json({ error: 'Failed to fetch session' }, { status: 500 });
+    return NextResponse.json({ user });
+  } catch (error: any) {
+    console.error('Fetch me error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }

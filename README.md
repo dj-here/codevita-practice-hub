@@ -1,111 +1,119 @@
-# PujaConnect — Production-Ready Online Pandit Booking Platform
+# CodeVita Practice Hub
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-13.5.6-black.svg)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-13.5.6%20App%20Router-black.svg)](https://nextjs.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791.svg)](https://www.postgresql.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-5.22-teal.svg)](https://www.prisma.io/)
 [![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.4-38B2AC.svg)](https://tailwindcss.com/)
-[![Vitest Tests](https://img.shields.io/badge/Tests-21%20Passed-brightgreen.svg)](https://vitest.dev/)
+[![Judge0 CE](https://img.shields.io/badge/Judge0%20CE-Sandbox-orange.svg)](https://judge0.com/)
+[![Problem Bank](https://img.shields.io/badge/Problems-220%20Validated-brightgreen.svg)](#-problem-bank--validation-engine)
+[![Vitest](https://img.shields.io/badge/Vitest-38%2F38%20Passed-brightgreen.svg)](https://vitest.dev/)
+[![Playwright](https://img.shields.io/badge/Playwright-E2E%20Passed-brightgreen.svg)](https://playwright.dev/)
 
-**PujaConnect** is an online religious services marketplace that connects devotees with verified Hindu pandits for sacred ceremonies, home pujas, life events (*samskaras*), and Vedic havans.
-
-Designed for an initial launch in **Hyderabad, India**, PujaConnect provides an experience comparable in polish to a high-end home-services platform. It is not merely a telephone directory; it features fixed itemized pricing, transparent samagri supply tiers, server-side concurrency protection, automated cancellation refund policies, and operational administrative oversight.
+**CodeVita Practice Hub** is a full-stack web platform built for engineering and computer science college students preparing for **TCS CodeVita** (Tata Consultancy Services' premier global programming contest) and technical/HR placement interviews.
 
 ---
 
 ## 1. Key Platform Features
 
-### 🌸 Customer Experience
-- **Ceremony Discovery**: Browse database-driven ceremonies (Griha Pravesh, Satyanarayan Puja, Ganesh Puja, Maha Rudrabhishek, etc.) filtered by occasion.
-- **AI Ritual & Priest Assistant**: Natural language search (e.g. *"I need a Telugu pandit for Griha Pravesh in Kukatpally next Sunday with samagri"*) with a deterministic offline NLP fallback.
-- **Service Packages**: Compare Basic, Standard, and Premium packages with explicit inclusions, exclusions, and duration.
-- **Samagri Options**: Choose between *Full Samagri Included* (pandit brings all herbs, ghee, and havan woods), *Partial Samagri*, or *Customer Arranged*.
-- **Booking Engine**: Live slot availability validation, time overlap protection with **60-minute travel/purification buffers**, and server-side pricing recalculation.
-- **Payment Processing**: Integrated Razorpay checkout and a built-in **Realistic Sandbox Simulator** for instant verification testing.
-- **Devotee Dashboard**: View upcoming pujas, review assigned priest credentials, download invoices, cancel with policy-calculated refunds, or post verified reviews.
+### 💻 1. Problem Bank & Solving Arena
+- **220+ Original Algorithmic Problems**: Story-style CodeVita problem statements categorized into 10 major algorithmic disciplines: *Number Theory, Arrays & Pointers, Strings, Matrices, Recursion & Backtracking, Dynamic Programming, Greedy, Graphs (BFS/DFS), Sorting & Searching, and Bit Manipulation*.
+- **Balanced Difficulty Distribution**: 75 Easy (33.9%), 95 Medium (43.0%), 51 Hard (23.1%), adhering to official CodeVita contest standards.
+- **Monaco Code Editor**: VS Code-powered browser editor with syntax highlighting, automatic indentation, C, C++, Java, and Python starter templates, keyboard shortcuts (`Ctrl+Enter` to run, `Ctrl+Shift+Enter` to submit), theme toggling, and per-problem debounced draft auto-saving.
+- **Multi-Language Sandbox**: Submissions run in isolated sandbox environments with strict trailing-whitespace tolerance, per-case timeout enforcement, and memory capping.
+- **Hidden Case Shielding**: Test case details for sample cases are visible with stdout/stderr; hidden test cases are strictly sealed and cannot be inspected by candidate browser bundles.
 
-### 🕉️ Pandit Partner Portal
-- **Partner Onboarding**: Application collecting Vedic pathashala education, traditions (*Krishna Yajurveda, Smartha, Vaishnava*), languages, and Hyderabad service localities.
-- **Trust & Verification**: Secure submission of identity proofs (Aadhaar, PAN, Veda Pathashala certificates). Documents are stored privately and accessible only to administrators.
-- **Schedule Management**: Block dates when unavailable or engaged in temple duties.
-- **Operational Schedule**: Accept bookings, inspect customer special instructions (gotra, smoke-free havan setups), and update ceremony status (*Arrived / In Progress* $\to$ *Completed*).
-- **Earnings & Payouts**: Clear financial breakdown (gross dakshina, platform commission, net payable balance).
+### ⏱️ 2. MockVita Timed Contest Mode
+- **Standard Contest Presets**:
+  - **90-Minute Sprint**: 3 algorithmic challenges (1 Easy, 1 Medium, 1 Hard).
+  - **180-Minute Pre-Qualifier**: 6 algorithmic challenges (2 Easy, 3 Medium, 1 Hard) mirroring actual zonal rounds.
+- **Custom Contest Builder**: Configure custom time limits and problem counts.
+- **Server-Authoritative Timer**: Refresh-proof countdown timer calculated against server-stored `endsAt` timestamps; prevents client-side clock tampering and auto-submits upon expiry.
+- **Live Scoreboard & Analytics**: Compare attempt scores against personal past performances.
+- **Post-Contest Review**: Access complete solution editorials with time/space complexity analysis and reference Python implementations after contest completion.
 
-### 🛡️ Administrator Operations Portal
-- **Marketplace Health Metrics**: GMV, Platform Commission, Total Devotees, Registered Priests, Refunds Processed, and Ceremony Completion Rate.
-- **Partner Verification Review**: Inspect submitted credentials, approve verified partners, reject with reasons, or request additional information (all logged to `AuditLog`).
-- **Emergency Reassignment**: Reassign upcoming ceremonies to alternative verified priests in the same locality with automatic customer and priest notifications.
-- **Audit Trails**: Complete status history preserved for every booking state transition.
+### 🎙️ 3. Mock Interview Mode
+- **Round 1: Technical Interview**:
+  - Algorithmic live coding challenge (20&ndash;30 min).
+  - 5&ndash;8 targeted questions evaluating OOP, DBMS, Operating Systems, Computer Networks, and language-specific internals.
+- **Round 2: Managerial / HR Interview**:
+  - 8&ndash;10 situational questions testing TCS core values, adaptability, rotational shift readiness, self-introduction, and relocation willingness.
+- **Dual-Engine Architecture**:
+  - **Claude 3.5 Sonnet Integration**: Role-locked Anthropic Claude interviewer with context-aware follow-ups.
+  - **Deterministic Static Fallback**: Curated static question bank with self-rating rubric if API key is missing or calls fail.
+- **4-Dimension Scorecard**: Evaluates *Communication*, *Technical Correctness*, *Problem Solving*, and *Confidence*, complemented with individualized strengths, knowledge gaps, and an actionable 7-day preparation roadmap.
 
----
+### 📊 4. Student Analytics Dashboard
+- Solved counts and completion percentages segmented by difficulty (*Easy, Medium, Hard*).
+- Interactive topic mastery matrix across all 10 core algorithmic categories.
+- Streak counter (current streak and longest consistency streak).
+- Personalized weak-topic recommendations derived from candidate submission history.
+- Historical record of mock contests and interview performance metrics.
 
-## 2. Architecture & Design Principles
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Next.js (App Router)                     │
-│   Tailwind CSS  •  Lucide Icons  •  Warm Indian Aesthetics  │
-├─────────────────────────────────────────────────────────────┤
-│                    Application API Layer                    │
-│   Auth (JWT/bcrypt)  •  Zod Validation  •  RBAC Middleware  │
-├──────────────────────────────┬──────────────────────────────┤
-│        Booking Engine        │        Payment Engine        │
-│  • 60m Travel Buffer         │  • Razorpay REST Integration │
-│  • Concurrency Locking       │  • Realistic Sandbox Adapter │
-│  • Immutable Price Snapshots │  • HMAC Signature Validation │
-│  • Strict State Machine      │  • Webhook Idempotency       │
-├──────────────────────────────┴──────────────────────────────┤
-│                   Relational Database Layer                 │
-│         Prisma ORM  •  SQLite (Dev) / PostgreSQL (Prod)     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-- **Visual Identity**: Warm ivory (`#FDFBF7`), muted saffron (`#E06D14`), deep temple maroon (`#7B1828`), and restrained gold accents (`#D4AF37`).
-- **Financial Consistency**: Integer math in INR rupees and minor units prevents floating-point rounding errors.
-- **Booking Concurrency**: Multi-layered checks guarantee no priest is double-booked across overlapping intervals:
-  $$\max(A_{\text{start}} - 60\text{min}, B_{\text{start}}) < \min(A_{\text{end}} + 60\text{min}, B_{\text{end}})$$
+### 🛡️ 5. Role-Protected Admin Operations
+- Role-based middleware enforcement (`ADMIN` role required).
+- High-level platform telemetry (Total Candidates, Problem Count, Evaluated Submissions, Global Acceptance Rate).
+- Problem Manager: Real-time search, filter, draft/published status toggling, and new problem authoring.
+- Test Case Engine: Ingest sample and hidden test cases with custom time and memory thresholds.
+- Global Submissions Audit Log: Monitor live evaluations across all candidates and languages.
 
 ---
 
-## 3. Pre-Seeded Accounts for Testing
+## 2. Official Contest Metadata
 
-The database seed script initializes ready-to-test accounts:
+All contest schedules, stages, and eligibility criteria are maintained in `content/codevita-info.json` and verified against official TCS announcements:
 
-| Role | Email | Password | Details |
-| :--- | :--- | :--- | :--- |
-| **Administrator** | `admin@pujaconnect.com` | `Admin@1234` | Full operational control, partner verification & reassignment |
-| **Devotee Customer** | `customer@pujaconnect.com` | `Password@123` | Active customer in Madhapur with past & upcoming bookings |
-| **Verified Pandit** | `pandit.shastri@pujaconnect.com` | `Password@123` | Pt. Rama Shastri (18y exp, Krishna Yajurveda, Approved) |
-| **Verified Pandit** | `pandit.narasimha@pujaconnect.com` | `Password@123` | Pt. Narasimha Murthy (12y exp, Vaishnava, Approved) |
-| **Pending Pandit** | `pandit.raghav@pujaconnect.com` | `Password@123` | Pt. Raghavendra Acharya (Pending admin verification review) |
+- **Official Contest Portal**: [https://codevita.tcsapps.com](https://codevita.tcsapps.com)
+- **Eligibility**: Open to undergraduate and postgraduate students in engineering, science, and related disciplines (Graduation batches 2024&ndash;2027).
+- **Allowed Languages**: C, C++, Java, Python.
 
 ---
 
-## 4. Quickstart Guide (Local Development)
+## 3. Technology Stack
+
+- **Framework**: Next.js 13.5.6 (App Router) + TypeScript
+- **Styling**: Tailwind CSS + Lucide Icons
+- **Database & ORM**: PostgreSQL 15 (Docker / Prod) / SQLite (`dev.db` for local zero-config dev) + Prisma ORM 5.22
+- **Authentication**: NextAuth.js (Email/Password credentials + Google OAuth adapter)
+- **Code Execution**: Dual-engine architecture:
+  - **Dockerized Judge0 CE**: Isolated multi-language sandbox with time/memory caps.
+  - **Native Local Compilers**: Fallback compiler runner (Python 3, GCC/G++, Clang, JDK).
+- **Editor**: Monaco Editor (`@monaco-editor/react`)
+- **Testing**: Vitest (Unit & Integration tests) + Playwright (Browser E2E)
+- **AI Engine**: Anthropic Claude 3.5 Sonnet with deterministic offline rubric fallback
+
+---
+
+## 4. Local Development Setup (Quickstart)
 
 ### Prerequisites
-- Node.js 18.x
+- Node.js 18.x or 20.x
 - npm 8.x or later
+- Python 3.8+ (for problem validation and native judge execution)
+- Docker & Docker Compose *(optional for local dev; required for full Judge0 sandbox)*
 
 ### Step 1: Install Dependencies
 ```bash
 npm install
 ```
 
-### Step 2: Configure Environment
+### Step 2: Configure Environment Variables
 Copy `.env.example` to `.env`:
 ```bash
 cp .env.example .env
 ```
-*(The default `.env` is already configured for zero-setup SQLite development)*
+*Note: The default `.env` is pre-configured for zero-setup local SQLite development (`file:./dev.db`).*
 
-### Step 3: Initialize Database & Seed Sample Data
+### Step 3: Initialize Database & Seed Problem Bank
 ```bash
-npx prisma generate
-npx prisma db push
-npm run db:seed
+# Push Prisma schema to database
+npm run db:push
+
+# Seed users, 220+ problems, 2,200+ test cases, and tags
+npm run seed
 ```
 
-### Step 4: Run the Development Server
+### Step 4: Start Development Server
 ```bash
 npm run dev
 ```
@@ -113,52 +121,103 @@ Open **[http://localhost:3000](http://localhost:3000)** in your browser.
 
 ---
 
-## 5. Automated Testing
+## 5. Pre-Seeded Accounts
 
-Run the Vitest test suite:
+The seed script creates the following default accounts for testing:
+
+| Role | Email | Password | Access Privileges |
+| :--- | :--- | :--- | :--- |
+| **System Administrator** | `admin@codevita.hub` | `Admin@CodeVita2026` | Full admin panel (`/admin`), problem creation, test case uploads, submissions audit |
+| **Demo Student** | `student@codevita.hub` | `Student@2026` | Solving arena, contests, mock interviews, progress dashboard |
+
+---
+
+## 6. Verification & Automated Test Suites
+
+### 1. Validate Complete 220+ Problem Bank
+Validates that every Python reference solution passes 100% of its sample and hidden test cases in the sandbox:
 ```bash
-npm test
+npm run validate:problems
+```
+*Expected Output: `Validation Summary: 220 / 220 Passed (0 Failed, 2207 test cases verified)`*
+
+### 2. Unit & Integration Test Suite (Vitest)
+Executes all 38 automated test cases covering authentication, judge verdicts, contest timers, admin role barriers, and hidden-case leakage prevention:
+```bash
+npm run test
+```
+*Expected Output: `Test Files  7 passed (7) | Tests  38 passed (38)`*
+
+### 3. Playwright End-to-End Suite
+Runs headless browser simulation of the complete candidate lifecycle (*Registration &rarr; Login &rarr; Problem Arena &rarr; Solution Submission &rarr; Accepted Verdict*):
+```bash
+npm run test:e2e
+```
+*Expected Output: `1 passed (candidate-journey.spec.ts)`*
+
+### 4. Production Next.js Build
+Verifies that all 14 static and dynamic App Router routes compile with zero type errors:
+```bash
+npm run build
 ```
 
-### Test Coverage Summary:
-- **Unit Tests**:
-  - `pricing.test.ts`: Base fee calculations, samagri tiers, platform commissions, and cancellation refund percentages ($\ge 48\text{h} \to 100\%$, $24\text{--}48\text{h} \to 75\%$, $12\text{--}24\text{h} \to 50\%$, $< 12\text{h} \to 0\%$).
-  - `booking-engine.test.ts`: Time conversion, 60-minute travel buffer overlap collision, booking number generation, and state machine transition rules.
-  - `validations.test.ts`: Zod schema validation boundaries for bookings, registrations, and reviews.
-- **Integration Tests**:
-  - `booking-workflow.test.ts`: Password hashing (bcrypt), JWT sessions, payment HMAC signature validation, and deterministic NLP ritual discovery.
-
 ---
 
-## 6. Docker & Containerized Deployment
+## 7. Production Deployment (Docker Compose)
 
-Run the complete platform with Docker:
+For production deployment on an Ubuntu/Debian Linux VPS or cloud provider:
+
 ```bash
-docker-compose up --build
+# 1. Start PostgreSQL, Judge0 Sandbox, and Redis
+docker compose up -d postgres judge0 redis
+
+# 2. Push database schema and seed data
+docker compose run --rm web npm run db:push
+docker compose run --rm web npm run seed
+
+# 3. Start web application
+docker compose up -d web
 ```
-This launches the Next.js container and a healthy PostgreSQL 15 database instance.
+
+Refer to **[DEPLOYMENT.md](file:///c:/Users/Deepak%20joshi/Downloads/project/DEPLOYMENT.md)** for detailed Nginx reverse proxy configurations, Let's Encrypt SSL instructions, and cloud deployment guides (Railway / Render + Supabase).
 
 ---
 
-## 7. Environment Variables Reference
+## 8. Database Backup & Disaster Recovery
 
-| Variable | Description | Default / Example |
-| :--- | :--- | :--- |
-| `DATABASE_URL` | Database connection string | `file:./dev.db` (or PostgreSQL URL) |
-| `JWT_SECRET` | Secret key for HTTP-only session cookies | 64+ char random string |
-| `NEXT_PUBLIC_APP_URL` | Base application URL | `http://localhost:3000` |
-| `ENABLE_SANDBOX_PAYMENTS`| Enable built-in payment simulator | `true` |
-| `RAZORPAY_KEY_ID` | Razorpay Key ID (optional in sandbox) | `rzp_test_placeholder` |
-| `RAZORPAY_KEY_SECRET` | Razorpay Key Secret | `rzp_secret_placeholder` |
-| `RAZORPAY_WEBHOOK_SECRET`| Razorpay Webhook Secret | `rzp_webhook_secret_placeholder` |
-| `GEMINI_API_KEY` | Google Gemini API key (optional) | `""` *(Deterministic NLP handles offline queries)* |
-| `DEFAULT_CITY` | Primary operations city | `Hyderabad` |
+Automated backup and restoration scripts with gzip compression, checksum generation, and 7-day retention cleanup:
+
+```bash
+# Create timestamped database backup
+./scripts/backup-db.sh ./backups
+
+# Restore database from backup archive
+./scripts/restore-db.sh ./backups/codevita_db_YYYYMMDD_HHMMSS.sql.gz --yes
+```
 
 ---
 
-## 8. Cancellation & Refund Policy Rules
+## 9. Troubleshooting Guide
 
-- **$\ge 48$ Hours Before Ceremony**: **100% Refund** (minus ₹150 payment gateway/processing fee).
-- **24 to 48 Hours Before Ceremony**: **75% Refund** (25% retained to compensate reserved priest schedule).
-- **12 to 24 Hours Before Ceremony**: **50% Refund** (50% retained for priest schedule and samagri sourcing).
-- **$< 12$ Hours Before Ceremony**: **Non-Refundable** (Pandit schedule blocked and perishable materials procured).
+### 1. Code Execution Fallback & Sandbox Notes
+- **Local Dev without Docker**: If Judge0 is not running locally, the system automatically falls back to native compiler execution (`python`, `gcc`, `g++`, `javac`). Ensure Python 3 is in your system `PATH`.
+- **Judge0 Connection Refused**: When running Judge0 in Docker, verify `JUDGE0_API_URL` is set to `http://localhost:2358` (or `http://judge0:2358` within Docker network) and test endpoint connectivity with `curl http://localhost:2358/system_info`.
+
+### 2. Windows Defender & Subprocess Latency
+- When running `npm run validate:problems` on Windows, background antivirus scanning can occasionally increase process creation latency. The validation script includes automatic retry logic and multi-worker parallelism to ensure deterministic validation passes.
+
+### 3. NextAuth Session Cookie & Cross-Origin Configuration
+- When deploying behind a reverse proxy (e.g., Nginx or Cloudflare), ensure `NEXTAUTH_URL` matches your public domain and that `X-Forwarded-Proto: https` is forwarded.
+- For local testing, ensure requests navigate to `http://localhost:3000` rather than `http://127.0.0.1:3000` to prevent cookie origin mismatches.
+
+### 4. Anthropic API Key & Mock Interview Fallback
+- If `ANTHROPIC_API_KEY` is not provided in `.env`, the mock interview engine seamlessly transitions to the curated static interview bank without interrupting the candidate's session. A notification badge informs the candidate that the deterministic rubric engine is active.
+
+### 5. Contest Timer Server Drift Handling
+- Contest time enforcement is server-authoritative. The client receives an ISO timestamp (`endsAt`). If the candidate's device clock drifts, the server verifies `now() <= endsAt + 5s` grace period, guaranteeing fair evaluation regardless of client time settings.
+
+---
+
+## 10. License
+
+This project is developed for educational and competitive programming preparation purposes. TCS and CodeVita are registered trademarks of Tata Consultancy Services Ltd.

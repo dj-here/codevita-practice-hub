@@ -1,42 +1,114 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: pujaconnect_app
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - DATABASE_URL=postgresql://pujaconnect:sacred_secure_pwd@postgres:5432/pujaconnect_db?schema=public
-      - JWT_SECRET=production-secret-key-64-character-random-string-here
-      - NEXT_PUBLIC_APP_URL=http://localhost:3000
-      - ENABLE_SANDBOX_PAYMENTS=true
-      - DEFAULT_CITY=Hyderabad
-    depends_on:
-      postgres:
-        condition: service_healthy
-
-  postgres:
-    image: postgres:15-alpine
-    container_name: pujaconnect_postgres
+  # Application Database (PostgreSQL)
+  codevita-db:
+    image: postgres:16-alpine
+    container_name: codevita-db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: pujaconnect
-      POSTGRES_PASSWORD: sacred_secure_pwd
-      POSTGRES_DB: pujaconnect_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: codevita_hub
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - codevita_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U pujaconnect -d pujaconnect_db"]
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 5s
       timeout: 5s
       retries: 5
 
+  # Redis for Judge0 Queue and Rate Limiting
+  codevita-redis:
+    image: redis:7-alpine
+    container_name: codevita-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - '6379:6379'
+    volumes:
+      - codevita_redisdata:/data
+
+  # Judge0 Sandbox Database
+  judge0-db:
+    image: postgres:16-alpine
+    container_name: judge0-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: judge0
+      POSTGRES_PASSWORD: judge0password
+      POSTGRES_DB: judge0
+    volumes:
+      - judge0_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U judge0']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Judge0 Server API
+  judge0-server:
+    image: judge0/judge0:latest
+    container_name: judge0-server
+    restart: unless-stopped
+    ports:
+      - '2358:2358'
+    environment:
+      - REDIS_HOST=codevita-redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=judge0-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=judge0
+      - POSTGRES_PASSWORD=judge0password
+      - POSTGRES_DB=judge0
+    depends_on:
+      judge0-db:
+        condition: service_healthy
+      codevita-redis:
+        condition: service_started
+
+  # Judge0 Worker (Code Execution Engine)
+  judge0-worker:
+    image: judge0/judge0:latest
+    container_name: judge0-worker
+    restart: unless-stopped
+    privileged: true
+    environment:
+      - REDIS_HOST=codevita-redis
+      - REDIS_PORT=6379
+      - POSTGRES_HOST=judge0-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=judge0
+      - POSTGRES_PASSWORD=judge0password
+      - POSTGRES_DB=judge0
+    depends_on:
+      judge0-db:
+        condition: service_healthy
+      codevita-redis:
+        condition: service_started
+
+  # Next.js Web Application
+  codevita-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: codevita-web
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgrespassword@codevita-db:5432/codevita_hub?schema=public
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=codevita-hub-production-secure-key-32-chars
+      - JUDGE0_API_URL=http://judge0-server:2358
+      - NODE_ENV=production
+    depends_on:
+      codevita-db:
+        condition: service_healthy
+
 volumes:
-  postgres_data:
+  codevita_pgdata:
+  codevita_redisdata:
+  judge0_pgdata:

@@ -21,11 +21,16 @@ yarn-error.log*
 
 # Local environment files (preserve .env.example)
 .env*.local
+.env
 
 # SQLite local databases
 *.db
 *.db-journal
 dev.db
+
+# Backups & Test Results
+/backups/
+/test-results/
 
 # OS Files
 .DS_Store

@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
+import AuthProvider from '@/components/providers/AuthProvider';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 
 export const metadata: Metadata = {
-  title: 'PujaConnect | Verified Vedic Pandit Booking Marketplace',
+  title: 'CodeVita Practice Hub | Master TCS CodeVita & Technical Interviews',
   description:
-    'Book verified Hindu pandits for Griha Pravesh, Satyanarayan Puja, Rudrabhishek, and sacred ceremonies in Hyderabad. Transparent pricing and complete samagri included.',
+    'Comprehensive preparation platform for TCS CodeVita: 200+ original algorithmic problems, multi-language sandbox judge, timed mock contests, and AI-driven technical & HR mock interviews.',
 };
 
 export default function RootLayout({
@@ -15,11 +16,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col bg-brand-ivory text-brand-charcoal selection:bg-brand-saffron selection:text-white">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+    <html lang="en" className="dark">
+      <body className="min-h-screen flex flex-col bg-slate-950 text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+        <AuthProvider>
+          <Navbar />
+          <main className="flex-1 flex flex-col">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

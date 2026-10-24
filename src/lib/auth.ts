@@ -1,78 +1,106 @@
+import { NextAuthOptions } from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import { AuthSession, UserRole } from '@/types';
-import prisma from './prisma';
+import { prisma } from './prisma';
+import { Role } from '@/types';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'pujaconnect-dev-secret-key-32-chars-at-least';
-const COOKIE_NAME = 'pujaconnect_session';
+export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  pages: {
+    signIn: '/login',
+    error: '/login',
+  },
+  providers: [
+    CredentialsProvider({
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Please enter your email and password');
+        }
 
-export async function hashPassword(password: string): Promise<string> {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-}
+        const email = credentials.email.trim().toLowerCase();
+        const user = await prisma.user.findUnique({
+          where: { email },
+        });
 
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
-}
+        if (!user || !user.passwordHash) {
+          throw new Error('Invalid email or password');
+        }
 
-export function signToken(session: AuthSession): string {
-  return jwt.sign(session, JWT_SECRET, { expiresIn: '7d' });
-}
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.passwordHash
+        );
 
-export function verifyToken(token: string): AuthSession | null {
-  try {
-    return jwt.verify(token, JWT_SECRET) as AuthSession;
-  } catch {
-    return null;
-  }
-}
+        if (!isPasswordValid) {
+          throw new Error('Invalid email or password');
+        }
 
-export async function getSession(): Promise<AuthSession | null> {
-  try {
-    const cookieStore = cookies();
-    const token = cookieStore.get(COOKIE_NAME)?.value;
-    if (!token) return null;
-    return verifyToken(token);
-  } catch {
-    return null;
-  }
-}
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role as Role,
+          image: user.image,
+        };
+      },
+    }),
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
+  ],
+  callbacks: {
+    async signIn({ user, account }) {
+      if (account?.provider === 'google' && user.email) {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email.toLowerCase() },
+        });
 
-export function setSessionCookie(session: AuthSession, response: NextResponse): void {
-  const token = signToken(session);
-  response.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 7 * 24 * 60 * 60, // 7 days
-    path: '/',
-  });
-}
-
-export function clearSessionCookie(response: NextResponse): void {
-  response.cookies.set(COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 0,
-    path: '/',
-  });
-}
-
-export async function requireAuth(): Promise<AuthSession> {
-  const session = await getSession();
-  if (!session) {
-    throw new Error('UNAUTHORIZED');
-  }
-  return session;
-}
-
-export async function requireRole(allowedRoles: UserRole[]): Promise<AuthSession> {
-  const session = await requireAuth();
-  if (!allowedRoles.includes(session.role)) {
-    throw new Error('FORBIDDEN');
-  }
-  return session;
-}
+        if (!existingUser) {
+          const newUser = await prisma.user.create({
+            data: {
+              email: user.email.toLowerCase(),
+              name: user.name || 'Student',
+              image: user.image,
+              role: Role.USER,
+            },
+          });
+          user.id = newUser.id;
+          (user as any).role = newUser.role;
+        } else {
+          user.id = existingUser.id;
+          (user as any).role = existingUser.role;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = (user as any).role || Role.USER;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token && session.user) {
+        session.user.id = token.id as string;
+        session.user.role = (token.role as Role) || Role.USER;
+      }
+      return session;
+    },
+  },
+  secret: process.env.NEXTAUTH_SECRET || 'dev-secret-codevita-hub-production-key-min-32-chars',
+};

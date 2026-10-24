@@ -1,81 +1,77 @@
-import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma';
-import { hashPassword, setSessionCookie } from '@/lib/auth';
-import { registerSchema } from '@/lib/validations';
-import { UserRole } from '@/types';
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import bcrypt from 'bcryptjs';
+import { prisma } from '@/lib/prisma';
+import { Role } from '@/types';
 
-export async function POST(req: NextRequest) {
+const registerSchema = z.object({
+  name: z.string().trim().min(2, 'Name must be at least 2 characters'),
+  email: z.string().trim().email('Invalid email address').toLowerCase(),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = registerSchema.safeParse(body);
+
     if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: 'Validation failed',
+          details: parsed.error.issues.map((issue) => issue.message),
+        },
+        { status: 400 }
+      );
     }
 
-    const { name, email, password, phone, role } = parsed.data;
-    const lowerEmail = email.toLowerCase();
+    const { name, email, password } = parsed.data;
 
+    // Check if user already exists
     const existing = await prisma.user.findUnique({
-      where: { email: lowerEmail },
+      where: { email },
     });
 
     if (existing) {
-      return NextResponse.json({ error: 'An account with this email already exists' }, { status: 409 });
+      return NextResponse.json(
+        { error: 'An account with this email address already exists' },
+        { status: 409 }
+      );
     }
 
-    const passwordHash = await hashPassword(password);
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
 
-    const user = await prisma.user.create({
+    // Create user
+    const newUser = await prisma.user.create({
       data: {
         name,
-        email: lowerEmail,
+        email,
         passwordHash,
-        phone: phone || null,
-        role,
-        ...(role === 'CUSTOMER'
-          ? {
-              customerProfile: {
-                create: {
-                  city: 'Hyderabad',
-                  preferredLanguages: 'Telugu, English',
-                },
-              },
-            }
-          : {
-              panditProfile: {
-                create: {
-                  city: 'Hyderabad',
-                  serviceLocalities: 'Madhapur, Gachibowli, Kukatpally',
-                  verificationStatus: 'NOT_SUBMITTED',
-                  isAvailable: true,
-                },
-              },
-            }),
+        role: Role.USER,
       },
-      include: {
-        customerProfile: true,
-        panditProfile: true,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        createdAt: true,
       },
     });
 
-    const session = {
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role as UserRole,
-      phone: user.phone,
-      avatarUrl: user.avatarUrl,
-    };
-
-    const res = NextResponse.json({
-      message: 'Registration successful',
-      user: session,
-    });
-
-    setSessionCookie(session, res);
-    return res;
-  } catch (err: any) {
-    console.error('Registration error:', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        message: 'Account created successfully',
+        user: newUser,
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error occurred during registration' },
+      { status: 500 }
+    );
   }
 }
