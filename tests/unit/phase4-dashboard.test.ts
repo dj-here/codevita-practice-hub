@@ -3,6 +3,9 @@ import { prisma } from '../../src/lib/prisma';
 
 describe('Phase 4: Problem List Performance & Dashboard Analytics', () => {
   it('Problem list query must execute under 300ms with 220+ seeded problems', async () => {
+    // Warm up connection pool if remote cloud DB
+    await prisma.problem.findFirst();
+
     const start = Date.now();
 
     const [problems, totalCount] = await Promise.all([

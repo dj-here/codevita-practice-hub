@@ -80,13 +80,22 @@ export async function GET(
       }
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       problem: {
         ...cached,
         solved,
         attempted,
       },
     });
+
+    if (!session?.user?.id) {
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=120, stale-while-revalidate=600'
+      );
+    }
+
+    return response;
   } catch (error: any) {
     console.error('Error fetching problem:', error);
     return NextResponse.json(

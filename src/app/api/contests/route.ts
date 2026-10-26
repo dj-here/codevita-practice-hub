@@ -59,7 +59,7 @@ export async function GET(req: Request) {
       });
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       presets,
       pastAttempts: userAttempts.map((att) => ({
         id: att.id,
@@ -75,6 +75,15 @@ export async function GET(req: Request) {
         submissionCount: att.submissions.length,
       })),
     });
+
+    if (!userId) {
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=120, stale-while-revalidate=600'
+      );
+    }
+
+    return response;
   } catch (error: any) {
     console.error('Contest list API error:', error);
     return NextResponse.json(

@@ -132,7 +132,7 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       problems: formattedProblems,
       pagination: {
         page,
@@ -141,6 +141,16 @@ export async function GET(req: Request) {
         totalPages: Math.ceil(totalCount / limit),
       },
     });
+
+    // High-concurrency edge caching: cache unauthenticated problem listings at Vercel/Cloudflare CDN edge
+    if (!userId) {
+      response.headers.set(
+        'Cache-Control',
+        'public, s-maxage=60, stale-while-revalidate=600'
+      );
+    }
+
+    return response;
   } catch (error: any) {
     console.error('Fetch problems list error:', error);
     return NextResponse.json(
