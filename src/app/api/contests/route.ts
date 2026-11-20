@@ -22,6 +22,15 @@ export async function GET(req: Request) {
         difficultyDistribution: { EASY: 1, MEDIUM: 1, HARD: 1 },
       },
       {
+        id: 'codevita-season-14-mockvita-2',
+        title: 'CodeVita Season 14 MockVita 2',
+        description: 'Authentic 6-problem contest: Cable Wrap, Ladder Problem, Uno Game, Zoobin, Path Finder, and Solve The Expression with 180 min timer.',
+        durationMinutes: 180,
+        problemCount: 6,
+        presetType: 'SEASON_14_MOCKVITA_2',
+        difficultyDistribution: { EASY: 0, MEDIUM: 3, HARD: 3 },
+      },
+      {
         id: 'codevita-prequalifier',
         title: 'Pre-Qualifier Simulation',
         description: 'Comprehensive 180-minute full simulation with 6 problems (2 Easy, 3 Medium, 1 Hard). Replicates TCS CodeVita Round 1 under exact contest time pressure.',

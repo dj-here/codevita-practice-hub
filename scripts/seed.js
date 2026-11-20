@@ -60,6 +60,7 @@ async function main() {
     { name: 'Graphs & Trees', slug: 'graphs-trees', description: 'BFS, DFS, Dijkstra, Minimum Spanning Trees, Topological Sort' },
     { name: 'Binary Search & Sorting', slug: 'binary-search-sorting', description: 'Search in Rotated Arrays, Custom Comparators, Median of Arrays' },
     { name: 'Simulation & Bit Manipulation', slug: 'simulation-bit-manipulation', description: 'Clockwise/Counter-Clockwise Shifts, Bitmasks, Game Simulation' },
+    { name: 'CodeVita Season 14 MockVita 2', slug: 'codevita-season-14-mockvita-2', description: 'Official problem statements from TCS CodeVita Season 14 MockVita 2 (Problems A to F).' },
   ];
 
   for (const tag of tags) {
@@ -87,6 +88,14 @@ async function main() {
       description: 'Full-length pre-qualifier simulation featuring 6 algorithmic problems across various topics.',
       durationMinutes: 180,
       presetType: 'STANDARD_180',
+      isPublished: true,
+    },
+    {
+      slug: 'codevita-season-14-mockvita-2',
+      title: 'CodeVita Season 14 MockVita 2 (180 min)',
+      description: 'Official MockVita 2 simulation featuring all 6 live problems: Cable Wrap, Ladder Problem, Uno Game, Zoobin, Path Finder, and Solve The Expression.',
+      durationMinutes: 180,
+      presetType: 'SEASON_14_MOCKVITA_2',
       isPublished: true,
     },
   ];

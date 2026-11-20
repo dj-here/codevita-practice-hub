@@ -1,0 +1,68 @@
+{
+  "id": "cv221",
+  "slug": "cv221-cable-wrap",
+  "title": "Cable Wrap",
+  "difficulty": "MEDIUM",
+  "topics": [
+    "CodeVita Season 14 MockVita 2",
+    "Matrices & Grids",
+    "Simulation & Bit Manipulation"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "In a design lab, the floor is modelled as a 2D square grid of size N \u00d7 M. An iron rod, represented by 'R', is fixed to the floor. A cable, represented by 'C', is laid over the grid and may weave above or below this rod.\n\nGrid symbols:\n\u2022 'R' - represents a rod fixed to the floor.\n\u2022 'C' - represents a cable laid over or under the rods.\n\u2022 '.' - represents empty space.\n\nThe rods are always placed horizontally or vertically between edges of the grid. The cable starts and ends at the edges of the grid but never starts or ends on the same cell as a rod.\nAdjacent cable cells are always connected horizontally or vertically (never diagonally). Cables do not run side by side - there will always be at least one empty cell gap between two separate cable paths. Similarly, cables do not run directly adjacent to rods. Also, cables can't run over the rods and vice versa, only intersection is allowed.\n\nWhen the cable overlaps a rod:\n\u2022 If the rod passes above the cable, the cell is marked as 'R'.\n\u2022 If the cable passes above the rod, the cell is marked as 'C'.\n\nYou have a special power that allows you to switch the positions of the rod and cable at any cell:\n\u2022 If the rod is above the cable, you can switch to make the cable go above the rod.\n\u2022 If the cable is above the rod, you can switch to make the rod go above the cable.\n\nYour goal is to determine the minimum number of such switches required to unwrap the cable completely - meaning it can be freely pulled holding both ends without getting caught around any rod.",
+  "inputFormat": "The first line contains two integers, N and M, separated by a space, denoting the number of rows and columns of the floor grid.\nEach of the next N lines has M characters: '.' for empty cell, 'C' for cable, and 'R' for rod (characters may be separated by spaces or contiguous).",
+  "outputFormat": "Single integer representing minimum number of times power needs to be used to unwrap the cable.",
+  "constraints": "4 <= N, M <= 20",
+  "sampleCases": [
+    {
+      "input": "5 5\n..R..\nCCCCC\n..R.C\nCCRCC\n..R..",
+      "expectedOutput": "1",
+      "explanation": "Special power applied to either crossing releases the cable."
+    },
+    {
+      "input": "5 11\nCCC.CCC.CCC\nC.C.C.C.C.C\nCRCRCRRRCRR\nC.C.C.C.C.C\nC.CCC.CCC.C",
+      "expectedOutput": "0",
+      "explanation": "Special power applied at cols 7 and 11 frees the cable in 2 switches."
+    },
+    {
+      "input": "7 6\nCCCRCC\n...R.C\nCCCCCC\nC..R..\nCCCCCC\n...R.C\nCCCRCC",
+      "expectedOutput": "0",
+      "explanation": "Cable is not coiled and pulls free with 0 switches."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": "5 5\n..R..\n..R..\nCCCCC\n..R..\n..R..",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "5 7\n...R...\nCCCCCCC\n...R..C\n...R..C\n...RCCC",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "6 6\n..R...\nCCCCCC\n..R..C\nCCCCCC\n..R...\n..R...",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "5 5\n.....\nRRRRR\n.....\nCCCCC\n.....",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "4 4\n.R..\nCCCC\n.R..\n.R..",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "5 5\n..R..\nCCRCC\n..R..\nCCRCC\n..R..",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "5 5\n..R..\nCCCCC\n..R..\nCCCCC\n..R..",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "4 4\n.R..\n.R..\n.R..\n.R..",
+      "expectedOutput": "0"
+    }
+  ]
+}

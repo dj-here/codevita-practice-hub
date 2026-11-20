@@ -1,0 +1,67 @@
+{
+  "id": "cv223",
+  "slug": "cv223-uno-game",
+  "title": "Uno Game",
+  "difficulty": "MEDIUM",
+  "topics": [
+    "CodeVita Season 14 MockVita 2",
+    "Recursion & Backtracking",
+    "Greedy Algorithms"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "It was a lazy Sunday, and Dhruv was feeling bored. He picked up his phone and sent a message in his group, inviting anyone interested in playing Uno to come over. Within a few minutes, N children from the neighbourhood arrived to join the fun.\n\nAmong the group, there are some friends-pairs and some rivals-pairs.\n\u2022 Friends: If one friend is selected, the other must also be selected into the game. Each friends pair always consists of exactly two members, and no person can belong to more than one friends pair. For example, if (A, B) is a friend pair, neither A nor B will appear in any other friend pair.\n\u2022 Rivals: Both members of a rival pair cannot be selected into the team.\n\nEach player has a uno score representing their skill level. Dhruv sets a limit for the team's total uno score and tries to select the maximum number of players without exceeding that limit.\n\nDhruv wanted to start the game quickly, but he is unsure which players to pick. Can you help him choose the optimal team?",
+  "inputFormat": "\u2022 The first line contains an integer N, the total number of players.\n\u2022 The second line contains N space-separated strings, representing the player's names.\n\u2022 The third line contains N space-separated integers, representing the skill level of each corresponding player.\n\u2022 The fourth line contains an integer N1, the number of friend pairs.\n\u2022 The next N1 lines each contain two space-separated names, representing a pair of friends.\n\u2022 The following line contains an integer N2, the number of rival pairs.\n\u2022 The next N2 lines each contain two space-separated names, representing a pair of rivals.\n\u2022 The last line contains a single integer, representing the skill limit set by Dhruv.",
+  "outputFormat": "Print the maximum number of players Dhruv can select obeying the friend, rival, and the skill limit rules.",
+  "constraints": "1 <= length of player name <= 10\n1 <= max limit Dhruv set <= 1000\n1 <= skill level of each player <= 100\n1 <= total number of players <= 25\n1 <= number of friends + number of rival pairs <= 10",
+  "sampleCases": [
+    {
+      "input": "10\nRam Raj Vishnu Teja Alekhya Keerti Ganesh Seetha Rakesh Latha\n1 2 3 4 5 6 7 8 9 1\n2\nRam Latha\nAlekhya Keerti\n3\nRam Teja\nRaj Rakesh\nSeetha Raj\n10",
+      "expectedOutput": "4",
+      "explanation": "Dhruv picks 4 players {Ram, Latha, Raj, Vishnu} totaling 7 <= 10 skill."
+    },
+    {
+      "input": "8\nAarav Maya Rohan Neha Karan Sana Vikram Isha\n1 4 9 10 11 17 2 6\n2\nAarav Isha\nMaya Karan\n2\nAarav Neha\nRohan Neha\n80",
+      "expectedOutput": "7",
+      "explanation": "Picks everyone except rival Neha for a total of 7 players."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": "4\nAlice Bob Charlie David\n5 10 15 20\n1\nAlice Bob\n1\nAlice Charlie\n25",
+      "expectedOutput": "2"
+    },
+    {
+      "input": "3\nP1 P2 P3\n10 10 10\n0\n0\n5",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "5\nA B C D E\n2 3 4 5 6\n1\nA B\n1\nC D\n20",
+      "expectedOutput": "4"
+    },
+    {
+      "input": "4\nA B C D\n10 20 30 40\n1\nA B\n1\nB C\n100",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "6\nP1 P2 P3 P4 P5 P6\n5 5 5 5 5 5\n1\nP1 P2\n1\nP3 P4\n20",
+      "expectedOutput": "4"
+    },
+    {
+      "input": "5\nTom Jerry Spike Tyke Butch\n12 15 20 5 18\n1\nTom Jerry\n2\nTom Spike\nSpike Butch\n35",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "4\nW X Y Z\n1 1 1 1\n0\n0\n4",
+      "expectedOutput": "4"
+    },
+    {
+      "input": "4\nW X Y Z\n10 20 30 40\n1\nW X\n1\nY Z\n10",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "3\nA B C\n5 5 5\n0\n2\nA B\nB C\n10",
+      "expectedOutput": "2"
+    }
+  ]
+}

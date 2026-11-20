@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const dynamic = 'force-dynamic';
 
 const startContestSchema = z.object({
-  presetType: z.enum(['STANDARD_90', 'STANDARD_180', 'CUSTOM']),
+  presetType: z.enum(['STANDARD_90', 'STANDARD_180', 'SEASON_14_MOCKVITA_2', 'CUSTOM']),
   durationMinutes: z.number().int().min(15).max(300).optional(),
   problemCount: z.number().int().min(1).max(10).optional(),
   difficultyMix: z
@@ -59,53 +59,75 @@ export async function POST(req: Request) {
       durationMinutes = 180;
       contestTitle = 'TCS CodeVita Pre-Qualifier Simulation';
       difficultyMix = { EASY: 2, MEDIUM: 3, HARD: 1 };
+    } else if (presetType === 'SEASON_14_MOCKVITA_2') {
+      durationMinutes = 180;
+      contestTitle = 'CodeVita Season 14 MockVita 2';
     } else if (presetType === 'CUSTOM') {
       durationMinutes = parseResult.data.durationMinutes || 90;
       difficultyMix = parseResult.data.difficultyMix || { EASY: 1, MEDIUM: 1, HARD: 1 };
       contestTitle = `Custom Mock Contest (${durationMinutes}m)`;
     }
 
-    // 1. Fetch user's already solved problem IDs to exclude them if possible
-    const solvedRecords = await prisma.userProgress.findMany({
-      where: { userId, solved: true },
-      select: { problemId: true },
-    });
-    const solvedIds = new Set(solvedRecords.map((r) => r.problemId));
+    let selectedProblemIds: string[] = [];
 
-    // 2. Select problems for each difficulty tier
-    const selectedProblemIds: string[] = [];
-
-    for (const [diff, count] of Object.entries(difficultyMix)) {
-      if (count <= 0) continue;
-
-      // First query: published problems in this difficulty NOT solved by user
-      const candidateProblems = await prisma.problem.findMany({
-        where: {
-          difficulty: diff,
-          isPublished: true,
-          id: { notIn: Array.from(solvedIds).concat(selectedProblemIds) },
-        },
-        select: { id: true },
+    if (presetType === 'SEASON_14_MOCKVITA_2') {
+      const mockSlugs = [
+        'cv221-cable-wrap',
+        'cv222-ladder-problem',
+        'cv223-uno-game',
+        'cv224-zoobin',
+        'cv225-path-finder',
+        'cv226-solve-the-expression',
+      ];
+      const mockProblems = await prisma.problem.findMany({
+        where: { slug: { in: mockSlugs } },
+        select: { id: true, slug: true },
       });
+      const slugMap = new Map(mockProblems.map((p) => [p.slug, p.id]));
+      selectedProblemIds = mockSlugs
+        .map((slug) => slugMap.get(slug))
+        .filter((id): id is string => Boolean(id));
+    } else {
+      // 1. Fetch user's already solved problem IDs to exclude them if possible
+      const solvedRecords = await prisma.userProgress.findMany({
+        where: { userId, solved: true },
+        select: { problemId: true },
+      });
+      const solvedIds = new Set(solvedRecords.map((r) => r.problemId));
 
-      let chosen = shuffleArray(candidateProblems).slice(0, count);
+      // 2. Select problems for each difficulty tier
+      for (const [diff, count] of Object.entries(difficultyMix)) {
+        if (count <= 0) continue;
 
-      // If not enough unsolved problems, fill remainder from general published pool of this difficulty
-      if (chosen.length < count) {
-        const remainingNeeded = count - chosen.length;
-        const fallbackCandidates = await prisma.problem.findMany({
+        // First query: published problems in this difficulty NOT solved by user
+        const candidateProblems = await prisma.problem.findMany({
           where: {
             difficulty: diff,
             isPublished: true,
-            id: { notIn: selectedProblemIds.concat(chosen.map((c) => c.id)) },
+            id: { notIn: Array.from(solvedIds).concat(selectedProblemIds) },
           },
           select: { id: true },
         });
-        const fallbackChosen = shuffleArray(fallbackCandidates).slice(0, remainingNeeded);
-        chosen = chosen.concat(fallbackChosen);
-      }
 
-      chosen.forEach((p) => selectedProblemIds.push(p.id));
+        let chosen = shuffleArray(candidateProblems).slice(0, count);
+
+        // If not enough unsolved problems, fill remainder from general published pool of this difficulty
+        if (chosen.length < count) {
+          const remainingNeeded = count - chosen.length;
+          const fallbackCandidates = await prisma.problem.findMany({
+            where: {
+              difficulty: diff,
+              isPublished: true,
+              id: { notIn: selectedProblemIds.concat(chosen.map((c) => c.id)) },
+            },
+            select: { id: true },
+          });
+          const fallbackChosen = shuffleArray(fallbackCandidates).slice(0, remainingNeeded);
+          chosen = chosen.concat(fallbackChosen);
+        }
+
+        chosen.forEach((p) => selectedProblemIds.push(p.id));
+      }
     }
 
     if (selectedProblemIds.length === 0) {

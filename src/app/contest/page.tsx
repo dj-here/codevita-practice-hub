@@ -52,7 +52,7 @@ export default function ContestLobbyPage() {
     loadContests();
   }, []);
 
-  const handleStartPreset = async (presetType: 'STANDARD_90' | 'STANDARD_180') => {
+  const handleStartPreset = async (presetType: 'STANDARD_90' | 'STANDARD_180' | 'SEASON_14_MOCKVITA_2') => {
     if (!session) {
       router.push('/login?callbackUrl=/contest');
       return;
@@ -147,7 +147,55 @@ export default function ContestLobbyPage() {
       </div>
 
       {/* Preset Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Preset 0: CodeVita Season 14 MockVita 2 */}
+        <div className="p-6 rounded-2xl bg-gradient-to-b from-purple-950/40 via-slate-900 to-slate-900 border border-purple-800/60 hover:border-purple-500 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/25 transition" />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-purple-950/80 border border-purple-600/50 text-purple-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                <span>Season 14 • Official</span>
+              </div>
+              <span className="text-xs font-bold text-amber-400">600 Points</span>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition">
+                Season 14 MockVita 2
+              </h3>
+              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                Authentic 6-problem contest: Cable Wrap, Ladder Problem, Uno Game, Zoobin, Path Finder, and Solve The Expression with 180 min timer.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob A-C</span>
+                <span className="text-xs font-semibold text-emerald-400">Wrap, Ladder, Uno</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob D-E</span>
+                <span className="text-xs font-semibold text-amber-400">Zoobin, Path</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob F</span>
+                <span className="text-xs font-semibold text-rose-400">Expression</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handleStartPreset('SEASON_14_MOCKVITA_2')}
+            disabled={starting}
+            className="w-full py-3 px-4 rounded-xl bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg shadow-purple-600/30"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>{starting ? 'Starting Contest...' : 'Start Season 14 MockVita 2'}</span>
+          </button>
+        </div>
+
         {/* Preset 1: 90 Min Sprint */}
         <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition" />

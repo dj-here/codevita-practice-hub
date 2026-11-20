@@ -1,0 +1,63 @@
+{
+  "id": "cv226",
+  "slug": "cv226-solve-the-expression",
+  "title": "Solve The Expression",
+  "difficulty": "HARD",
+  "topics": [
+    "CodeVita Season 14 MockVita 2",
+    "Strings & Parsing",
+    "Simulation & Bit Manipulation"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "Neena, a third-year engineering student, is enthusiastic about competitive programming. On one occasion, she is presented with a complex problem that necessitates the evaluation of a mathematical expression incorporating bitwise operations and brackets, with the understanding that brackets take precedence in the order of operations.\n\nIn this task, numerals (0-9), bitwise operators, and brackets are represented as 7-segment display patterns in 3x3 character matrices. The objective is to convert the 7-segment representations into binary strings, evaluate the resulting expression, and return the final numerical result.\n\nConversion rules:\n1. Read each 3x3 pattern from left-to-right and top-to-bottom, assigning '1' for illuminated segments and '0' for blank spaces (producing a 9-bit binary representation per glyph).\n2. For multi-digit numbers, concatenate the binary representations of each constituent digit from left to right.\n3. Operator precedence (highest to lowest):\n   - Brackets: ( )\n   - Logical NOT: !\n   - Logical OR: ||\n   - Logical AND: &&\n4. Bitwise evaluation: Perform bitwise operations on the binary strings.\n5. Output: Map each 9-bit chunk of the evaluated binary string back to its corresponding digit glyph to form the final numerical answer.",
+  "inputFormat": "\u2022 First three lines contain the 7-segment representation of numbers from 0-9 (10 glyphs of 3x3).\n\u2022 Next three lines contain the 7-segment representation of operators and brackets in order: Logical OR, Logical AND, Logical NOT, Opening bracket, Closing bracket (5 glyphs of 3x3).\n\u2022 Last three lines contain the 7-segment representation of the expression.",
+  "outputFormat": "Numeric value which denotes the result of the expression.",
+  "constraints": "1 <= N <= 32 (where N denotes total operands, operators, and brackets in the expression)\nThe expression is always valid and produces a valid numeric answer.",
+  "sampleCases": [
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _     _  _ \n|_||_||_   |\n  ||_||_|  |",
+      "expectedOutput": "67",
+      "explanation": "64 && 91 evaluates to 51."
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _     _  _  _ \n(   | ||   _| ||   | ) | \n(   | || |_   ||   | ) | ",
+      "expectedOutput": "?",
+      "explanation": "(1 || 2 || 7) && 2 evaluates to 2."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n       \n  |  | \n  |  | ",
+      "expectedOutput": "11"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _  _  _ \n _| _| _|\n|_  _| _|",
+      "expectedOutput": "233"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _  _ \n| |  |\n|_|  |",
+      "expectedOutput": "07"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _  _ \n _||_|\n|_   |",
+      "expectedOutput": "2"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _  _ \n _||_|\n|_| _|",
+      "expectedOutput": "9"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _ \n  |\n  |",
+      "expectedOutput": "7"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _ \n|_|\n|_|",
+      "expectedOutput": "8"
+    },
+    {
+      "input": " _     _  _     _  _  _  _  _ \n| |  | _| _||_||_ |_   ||_||_|\n|_|  ||_  _|  | _||_|  ||_| _|\n _  _  _  _  _ \n| || | | (   )\n|_||_| | (   )\n _ \n _|\n|_ ",
+      "expectedOutput": "2"
+    }
+  ]
+}

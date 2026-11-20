@@ -1,0 +1,67 @@
+{
+  "id": "cv222",
+  "slug": "cv222-ladder-problem",
+  "title": "Ladder Problem",
+  "difficulty": "HARD",
+  "topics": [
+    "CodeVita Season 14 MockVita 2",
+    "Matrices & Grids",
+    "Graphs & Trees"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "Shyam is tasked with relocating a lengthy ladder within his residence. The substantial presence of various household items throughout the house presents significant challenges when attempting to manoeuvre the ladder through confined areas.\n\nThe house is represented as a grid of M rows and N columns. Each cell in the grid can contain:\n\u2022 'I' - part of the current position of the ladder (source).\n\u2022 'L' - part of the destination where the ladder needs to go.\n\u2022 'B' - a household item (Block).\n\u2022 'E' - an empty cell where the ladder can move.\n\nThe ladder has a fixed length L and is placed either horizontally or vertically in the grid. It must always remain in a straight line unless it is being rotated.\n\nMovement Rules:\n\u2022 The ladder can be moved one cell at a time in any of the four directions (up/down/left/right), maintaining its orientation.\n\u2022 The ladder can be rotated by 90 degrees (from horizontal to vertical or vice versa) only if all cells in the square area formed by both the current and rotated positions are empty (no B or walls).\n\u2022 Each move or rotation counts as 1 step.\n\nGoal is to find the minimum number of steps required to move the ladder from the source ('I') to the destination ('L').\nIf it is not possible, print \"Impossible\".",
+  "inputFormat": "First line: Two integers M and N, the dimensions of the grid.\nNext M lines: N space-separated characters (or contiguous strings) representing the grid ('I', 'L', 'B', or 'E').",
+  "outputFormat": "A single integer representing the minimum number of steps, or the string \"Impossible\".",
+  "constraints": "0 <= M, N <= 15\n2 <= Length of ladder <= 6",
+  "sampleCases": [
+    {
+      "input": "5 5\nIIEEE\nEBEEB\nEBEBB\nEBEEB\nEEELL",
+      "expectedOutput": "8",
+      "explanation": "Translates and rotates within 2x2 open space in 8 steps."
+    },
+    {
+      "input": "6 6\nIIIEEE\nEBEEEE\nEEEEEE\nEEEEBE\nEEEEEE\nLLLEBE",
+      "expectedOutput": "7",
+      "explanation": "Reach destination in 7 steps through rotations and slides."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": "4 4\nIIEE\nEEEE\nEEEE\nEELL",
+      "expectedOutput": "5"
+    },
+    {
+      "input": "3 3\nIIE\nBBB\nLLE",
+      "expectedOutput": "Impossible"
+    },
+    {
+      "input": "5 5\nIIEEE\nEEEEE\nEEEEE\nEEEEE\nEEELL",
+      "expectedOutput": "7"
+    },
+    {
+      "input": "4 4\nIEEE\nIEEE\nEEEE\nLLEE",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "4 4\nIIEE\nBBEE\nEEEE\nEELL",
+      "expectedOutput": "5"
+    },
+    {
+      "input": "5 5\nIIEEE\nEEEEE\nBBBBB\nEEEEE\nEEELL",
+      "expectedOutput": "Impossible"
+    },
+    {
+      "input": "4 4\nIIEE\nEEEE\nEEEE\nLLEB",
+      "expectedOutput": "3"
+    },
+    {
+      "input": "5 5\nIIEEE\nEBBBE\nEEEEE\nEBBBE\nEEELL",
+      "expectedOutput": "Impossible"
+    },
+    {
+      "input": "4 4\nIIEE\nEEEE\nEELL\nEEEE",
+      "expectedOutput": "4"
+    }
+  ]
+}

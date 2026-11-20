@@ -33,6 +33,7 @@ export default function ProblemsListPage() {
   const [page, setPage] = useState(parseInt(searchParams.get('page') || '1'));
 
   const tags = [
+    'CodeVita Season 14 MockVita 2',
     'Number Theory & Primes',
     'Arrays & Two Pointers',
     'Strings & Parsing',
