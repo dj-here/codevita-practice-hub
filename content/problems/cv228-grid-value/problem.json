@@ -1,0 +1,63 @@
+{
+  "id": "cv228",
+  "slug": "cv228-grid-value",
+  "title": "Grid Value",
+  "difficulty": "MEDIUM",
+  "topics": [
+    "CodeVita Season 14 MockVita 1",
+    "Dynamic Programming",
+    "Matrices & Grids"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "You are given a grid of size N*M. There are two types of people: type 'A' and type 'B'. You are also given the maximum number of people of each type: countA is the number of 'A' type persons and countB is the number of 'B' type persons.\\n\\nThe satisfaction of a person in the grid is determined as follows:\\n\u2022 The initial satisfaction of a person of type A is 80. It decreases by 20 for each neighbor living in adjacent cells.\\n\u2022 The initial satisfaction of a person of type B is 50. It increases by 10 for each neighbor living in adjacent cells.\\n\\nYour task is to determine the maximum possible total grid satisfaction.\\n\\nNote:\\n\u2022 You may choose exactly how many people you want to be present in the grid (at most countA of type A and at most countB of type B).\\n\u2022 A person can live in only one cell, and no more than one person can live in a cell.\\n\u2022 Two cells are said to be neighbors if the cells are adjacent and share a boundary.",
+  "inputFormat": "The first line contains T, the number of test cases.\\nEach test case is one line with four integers: N M countA countB.",
+  "outputFormat": "For each test case print the maximum possible grid satisfaction.",
+  "constraints": "1 <= T <= 10\\n1 <= N, M <= 6\\n0 <= countA, countB <= min(N*M, 6)",
+  "sampleCases": [
+    {
+      "input": "1\n3 1 0 1",
+      "expectedOutput": "50",
+      "explanation": "Here we can have only one person of type B. Since this person will have no neighbors, the satisfaction of this person will not change and we get the maximum grid value of 50."
+    },
+    {
+      "input": "1\n2 2 1 2",
+      "expectedOutput": "190",
+      "explanation": "Placing 1 person of type A and 2 persons of type B such that A has 1 B neighbor (80-20=60), and the two B persons share boundaries yields 60 + 70 + 60 = 190 maximum satisfaction."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": "1\n2 2 0 0",
+      "expectedOutput": "0"
+    },
+    {
+      "input": "1\n3 3 2 0",
+      "expectedOutput": "160"
+    },
+    {
+      "input": "1\n2 2 0 4",
+      "expectedOutput": "280"
+    },
+    {
+      "input": "1\n1 1 1 1",
+      "expectedOutput": "80"
+    },
+    {
+      "input": "1\n3 2 2 3",
+      "expectedOutput": "330"
+    },
+    {
+      "input": "1\n2 3 3 3",
+      "expectedOutput": "350"
+    },
+    {
+      "input": "2\n1 2 1 1\n3 1 1 1",
+      "expectedOutput": "120\n130"
+    },
+    {
+      "input": "1\n4 3 4 4",
+      "expectedOutput": "580"
+    }
+  ]
+}

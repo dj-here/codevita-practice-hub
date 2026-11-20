@@ -52,7 +52,7 @@ export default function ContestLobbyPage() {
     loadContests();
   }, []);
 
-  const handleStartPreset = async (presetType: 'STANDARD_90' | 'STANDARD_180' | 'SEASON_14_MOCKVITA_2') => {
+  const handleStartPreset = async (presetType: 'STANDARD_90' | 'STANDARD_180' | 'SEASON_14_MOCKVITA_1' | 'SEASON_14_MOCKVITA_2') => {
     if (!session) {
       router.push('/login?callbackUrl=/contest');
       return;
@@ -147,7 +147,55 @@ export default function ContestLobbyPage() {
       </div>
 
       {/* Preset Cards */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Preset 0: CodeVita Season 14 MockVita 1 */}
+        <div className="p-6 rounded-2xl bg-gradient-to-b from-teal-950/40 via-slate-900 to-slate-900 border border-teal-800/60 hover:border-teal-500 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
+          <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-teal-500/10 rounded-full blur-2xl group-hover:bg-teal-500/25 transition" />
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-950/80 border border-teal-600/50 text-teal-300 text-xs font-semibold">
+                <Sparkles className="w-3.5 h-3.5 text-teal-400" />
+                <span>Season 14 • Official</span>
+              </div>
+              <span className="text-xs font-bold text-amber-400">600 Points</span>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-bold text-white group-hover:text-teal-300 transition">
+                Season 14 MockVita 1
+              </h3>
+              <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                Authentic 6-problem contest: Tom and Jerry, Grid Value, Create Target Array, Towers, Surajkund Mela Rides, and Lucky Group with 180 min timer.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2 pt-2">
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob A-C</span>
+                <span className="text-xs font-semibold text-emerald-400">Tom, Grid, Array</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob D-E</span>
+                <span className="text-xs font-semibold text-amber-400">Towers, Rides</span>
+              </div>
+              <div className="p-2 rounded-lg bg-slate-950 border border-slate-800 text-center">
+                <span className="text-[10px] text-slate-500 block uppercase">Prob F</span>
+                <span className="text-xs font-semibold text-rose-400">Lucky Group</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            onClick={() => handleStartPreset('SEASON_14_MOCKVITA_1')}
+            disabled={starting}
+            className="w-full py-3 px-4 rounded-xl bg-teal-600 hover:bg-teal-500 disabled:opacity-50 text-white font-semibold text-xs flex items-center justify-center space-x-2 transition shadow-lg shadow-teal-600/30"
+          >
+            <Play className="w-4 h-4 fill-white" />
+            <span>{starting ? 'Starting Contest...' : 'Start Season 14 MockVita 1'}</span>
+          </button>
+        </div>
+
         {/* Preset 0: CodeVita Season 14 MockVita 2 */}
         <div className="p-6 rounded-2xl bg-gradient-to-b from-purple-950/40 via-slate-900 to-slate-900 border border-purple-800/60 hover:border-purple-500 transition-all flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden group">
           <div className="absolute top-0 right-0 transform translate-x-4 -translate-y-4 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/25 transition" />

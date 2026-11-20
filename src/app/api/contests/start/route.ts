@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const dynamic = 'force-dynamic';
 
 const startContestSchema = z.object({
-  presetType: z.enum(['STANDARD_90', 'STANDARD_180', 'SEASON_14_MOCKVITA_2', 'CUSTOM']),
+  presetType: z.enum(['STANDARD_90', 'STANDARD_180', 'SEASON_14_MOCKVITA_1', 'SEASON_14_MOCKVITA_2', 'CUSTOM']),
   durationMinutes: z.number().int().min(15).max(300).optional(),
   problemCount: z.number().int().min(1).max(10).optional(),
   difficultyMix: z
@@ -59,6 +59,9 @@ export async function POST(req: Request) {
       durationMinutes = 180;
       contestTitle = 'TCS CodeVita Pre-Qualifier Simulation';
       difficultyMix = { EASY: 2, MEDIUM: 3, HARD: 1 };
+    } else if (presetType === 'SEASON_14_MOCKVITA_1') {
+      durationMinutes = 180;
+      contestTitle = 'CodeVita Season 14 MockVita 1';
     } else if (presetType === 'SEASON_14_MOCKVITA_2') {
       durationMinutes = 180;
       contestTitle = 'CodeVita Season 14 MockVita 2';
@@ -70,7 +73,24 @@ export async function POST(req: Request) {
 
     let selectedProblemIds: string[] = [];
 
-    if (presetType === 'SEASON_14_MOCKVITA_2') {
+    if (presetType === 'SEASON_14_MOCKVITA_1') {
+      const mockSlugs = [
+        'cv227-tom-and-jerry',
+        'cv228-grid-value',
+        'cv229-create-target-array',
+        'cv230-towers',
+        'cv231-surajkund-mela-rides',
+        'cv232-lucky-group',
+      ];
+      const mockProblems = await prisma.problem.findMany({
+        where: { slug: { in: mockSlugs } },
+        select: { id: true, slug: true },
+      });
+      const slugMap = new Map(mockProblems.map((p) => [p.slug, p.id]));
+      selectedProblemIds = mockSlugs
+        .map((slug) => slugMap.get(slug))
+        .filter((id): id is string => Boolean(id));
+    } else if (presetType === 'SEASON_14_MOCKVITA_2') {
       const mockSlugs = [
         'cv221-cable-wrap',
         'cv222-ladder-problem',

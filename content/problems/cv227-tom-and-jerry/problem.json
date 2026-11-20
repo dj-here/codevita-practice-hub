@@ -1,0 +1,63 @@
+{
+  "id": "cv227",
+  "slug": "cv227-tom-and-jerry",
+  "title": "Tom and Jerry",
+  "difficulty": "HARD",
+  "topics": [
+    "CodeVita Season 14 MockVita 1",
+    "Graphs & Trees",
+    "Game Theory"
+  ],
+  "timeLimitMs": 1000,
+  "memoryLimitKb": 262144,
+  "statement": "Tom and Jerry are playing a game. In this game, they are given an undirected graph of N vertices labelled from 0 to N - 1 and M edges. They take alternate turns starting with Jerry.\\n\\nAt the beginning, Jerry is at node 1, Tom is at node 2 and there is a hole at node 0. In each turn, a player can move to any other node that has a direct edge with the node in which they are currently present, with the condition that Tom cannot move to node 0.\\n\\nThe game can end in three ways:\\n1) If ever Tom occupies the same node as Jerry, Tom wins.\\n2) If ever Jerry reaches the hole (node 0), Jerry wins.\\n3) If any position is repeated, the game is a draw.\\n\\nYour task is to find who wins the game or if there is a draw between the two, assuming both players play optimally.",
+  "inputFormat": "The first line contains T, the number of test cases.\\nFor each test case:\\nThe first line contains two integers N and M, denoting the number of vertices and edges.\\nThe next M lines each contain two integers u and v, denoting an undirected edge between nodes u and v.",
+  "outputFormat": "For each testcase, print TOM if Tom wins, JERRY if Jerry wins, or DRAW if the game is a draw.",
+  "constraints": "1 <= T <= 10\\n3 <= N <= 100\\n2 <= M <= 200\\n0 <= u, v < N, u != v",
+  "sampleCases": [
+    {
+      "input": "1\n5 5\n0 3\n1 3\n2 3\n1 4\n2 4",
+      "expectedOutput": "TOM",
+      "explanation": "In the first step Jerry (at node 1) has two options, node 4 and node 3. Tom (at node 2) also has two options, node 4 and node 3, so whichever node Jerry chooses, Tom will always catch him."
+    },
+    {
+      "input": "1\n6 6\n1 5\n5 3\n5 4\n3 2\n4 2\n3 0",
+      "expectedOutput": "DRAW",
+      "explanation": "In the first step Jerry (at node 1) has only one option, node 5. Tom (at node 2) can go to node 3 or node 4 and plays so that Jerry can never safely reach node 0. Jerry and Tom keep moving back and forth, positions repeat, and the game is a draw."
+    }
+  ],
+  "hiddenCases": [
+    {
+      "input": "1\n3 2\n1 0\n2 1",
+      "expectedOutput": "JERRY"
+    },
+    {
+      "input": "1\n3 2\n1 2\n2 0",
+      "expectedOutput": "TOM"
+    },
+    {
+      "input": "1\n4 2\n1 3\n2 3",
+      "expectedOutput": "TOM"
+    },
+    {
+      "input": "1\n6 6\n1 3\n3 0\n1 4\n4 0\n2 5\n5 2",
+      "expectedOutput": "JERRY"
+    },
+    {
+      "input": "1\n5 4\n0 3\n1 3\n2 3\n4 3",
+      "expectedOutput": "TOM"
+    },
+    {
+      "input": "2\n5 5\n0 3\n1 3\n2 3\n1 4\n2 4\n6 6\n1 5\n5 3\n5 4\n3 2\n4 2\n3 0",
+      "expectedOutput": "TOM\nDRAW"
+    },
+    {
+      "input": "1\n7 7\n0 3\n3 4\n4 1\n1 5\n5 6\n6 2\n2 4",
+      "expectedOutput": "DRAW"
+    },
+    {
+      "input": "1\n8 8\n1 3\n3 4\n4 0\n2 5\n5 6\n6 7\n7 4\n1 2",
+      "expectedOutput": "JERRY"
+    }
+  ]
+}
